@@ -1,145 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-//创建main函数
-void main() {
-  runApp(MyApp());
-}
+import 'package:english_words/english_words.dart';
+
+void main()=>runApp(new MyApp());
 class MyApp extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
+    final wordPair = new WordPair.random();
     return MaterialApp(
-      title: "Hello world",
       home: Scaffold(
         appBar: AppBar(
-          title: Text("chenss"),
+          title: Text(wordPair.asPascalCase),
         ),
-        body: customButton(),
-      )
-    );
-  }
-}
-class ContentWidget extends StatefulWidget{
-  ContentWidget(){
-    print("contentwidget的构造函数被调用");
-  }
-  @override
-  State createState() {
-    return ContentWidgetState();
-  }
-}
-class ContentWidgetState extends State<ContentWidget>{
-  ContentWidgetState(){
-    print("ContentWidgetState的构造函数被调用");
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    print("ContentWidgetState的initState被调用");
-  }
-
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    print("ContentWidgetState的didChangeDependencies被调用了");
-  }
-
-  @override
-  void didUpdateWidget(ContentWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    print("ContentWidgetState的didUpdateWidget被调用了");
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    print("ContentWidgetState的build被调用了");
-    return Center(
-      child: Text("Hello fddddddddddddddddddddddddddddddddddddddddddddddworld",
-        style: TextStyle(
-          fontSize: 30,color: Color(0xff00ff00)),
-          textAlign: TextAlign.left,
-          overflow: TextOverflow.ellipsis,
-          maxLines:1,
-          textScaleFactor: 2,),
-    );
-  }
-}
-class TextRich extends StatelessWidget{
-
-  @override
-  Widget build(BuildContext context) {
-    return Text.rich(TextSpan(
-      children: [
-        TextSpan(text:'张三',style: TextStyle(fontSize: 40)),
-        TextSpan(text:'李四',style: TextStyle(fontSize: 10))
-      ]
-    ));
-  }
-}
-class ButtonWidget extends StatelessWidget{
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        RaisedButton(
-          child: Text("btn1"),
-          onPressed: (){
-            print("raise button click");
-          },
-        ),
-        FlatButton(
-          child: Text("btn2"),
-          onPressed: ()=>print("flat button click"),
-        ),
-        OutlineButton(
-          child: Text("btn3"),
-          onPressed: ()=>print("btn3 button click"),
-        ),
-        FloatingActionButton(
-          child: Text("btn4"),
-          onPressed: ()=>print("btn4 button click"),
-        )
-      ],
-    );
-  }
-}
-//自定义button
-class customButton extends StatelessWidget{
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: RaisedButton(
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Icon(Icons.people,color: Colors.white,),
-            SizedBox(width: 10,)
-          ],
-        ),
-        color: Colors.red,
-        onPressed: ()=>print("自定义按钮点击"),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8) //圆角
-        ),
+        body: RandomWords(),
       ),
     );
   }
 }
 
+class RandomWords extends StatefulWidget{
 
-
-
-
-
-
-
-
-
-
-
-
+  @override
+  State createState() => new RandomWordsState();
+}
+class RandomWordsState extends State<RandomWords>{
+  final _suggestions = <WordPair>[]; //定义一个私有变量，数组存放生成的单词
+  final _biggerFont = TextStyle(fontSize: 18.0);
+  @override
+  Widget build(BuildContext context) {
+    final wordPair = new WordPair.random();
+    return _buildSuggestions();
+  }
+  //构建显示单词的ListView
+  Widget _buildSuggestions() {
+    return new ListView.builder(
+      padding: const EdgeInsets.all(16.0),
+      itemBuilder: (context,i){ //ListView的每个item都会执行该方法
+        if(i.isOdd){
+          return new Divider();
+        }
+        final index = i~/2;
+        if(index>= _suggestions.length){
+          _suggestions.addAll(generateWordPairs().take(10));
+        }
+        return _buildRow(_suggestions[index]);
+      }
+    );
+  }
+  _buildRow(WordPair pair){
+    return new ListTile(
+      title: new Text(
+        pair.asPascalCase,
+        style: _biggerFont,
+      ),
+    );
+  }
+}
 
